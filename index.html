@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nutrition Scanner</title>
+    <title>🍎 Nutrition Scanner</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><circle cx='8' cy='8' r='7' fill='%2334d399'/><path d='M6 4 Q8 3 10 4 L9 6 Q8 5 7 6 Z' fill='%23fff'/><circle cx='7.5' cy='4.5' r='0.5' fill='%2310b981'/><path d='M4 9 Q6 8 8 9 Q10 10 12 9' stroke='%23fff' stroke-width='1' fill='none'/></svg>">
+    <link rel="shortcut icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><circle cx='8' cy='8' r='7' fill='%2334d399'/><path d='M6 4 Q8 3 10 4 L9 6 Q8 5 7 6 Z' fill='%23fff'/><circle cx='7.5' cy='4.5' r='0.5' fill='%2310b981'/><path d='M4 9 Q6 8 8 9 Q10 10 12 9' stroke='%23fff' stroke-width='1' fill='none'/></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @keyframes scanLine {
@@ -92,7 +94,7 @@
                         </button>
                     </div>
 
-                    <input type="file" id="fileInput" class="hidden" accept="image/*">
+                    <input type="file" id="fileInput" class="hidden" accept="image/*" aria-label="Upload food image" title="Select image file to analyze">
 
                     <!-- Imagem Capturada -->
                     <div id="capturedImage" class="hidden">
