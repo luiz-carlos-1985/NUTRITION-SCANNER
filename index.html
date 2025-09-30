@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nutrition Scanner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes scanLine {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100vh); }
+        }
+        .scan-line { animation: scanLine 2s linear infinite; }
+        
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .fade-in-scale { animation: fadeInScale 0.6s ease-out; }
+        
+        @keyframes bounce {
+            0%, 20%, 53%, 80%, 100% { transform: translateY(0); }
+            40%, 43% { transform: translateY(-10px); }
+            70% { transform: translateY(-5px); }
+        }
+        .bounce-animation { animation: bounce 2s infinite; }
+        
+        .nutrition-card {
+            transition: all 0.3s ease;
+        }
+        .nutrition-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .camera-frame {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .scan-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 3px solid #10b981;
+            border-radius: 12px;
+            background: linear-gradient(45deg, transparent 30%, rgba(16, 185, 129, 0.1) 50%, transparent 70%);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-green-100 via-blue-50 to-teal-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <header class="text-center mb-12 fade-in-scale">
+            <h1 class="text-6xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent mb-4">
+                🥗 Nutrition Scanner
+            </h1>
+            <p class="text-xl text-gray-700">Analise a nutrição dos seus alimentos com IA</p>
+        </header>
+
+        <div class="max-w-6xl mx-auto">
+            <!-- Área de Captura -->
+            <div class="grid lg:grid-cols-2 gap-8 mb-8">
+                <div class="bg-white rounded-2xl shadow-xl p-8 fade-in-scale">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                        📸 Escaneie seu Alimento
+                    </h2>
+                    
+                    <div id="cameraContainer" class="camera-frame bg-gray-900 rounded-xl mb-6 relative">
+                        <video id="cameraFeed" class="w-full h-64 object-cover rounded-xl" autoplay muted></video>
+                        <div id="scanOverlay" class="scan-overlay hidden">
+                            <div class="scan-line absolute w-full h-1 bg-green-400 opacity-80"></div>
+                        </div>
+                        <div id="captureArea" class="absolute inset-0 flex items-center justify-center bg-gray-200 rounded-xl">
+                            <div class="text-center">
+                                <div class="text-6xl mb-4">📷</div>
+                                <p class="text-lg text-gray-600 mb-4">Clique para ativar a câmera</p>
+                                <button id="startCamera" class="bg-gradient-to-r from-green-500 to-blue-500 text-white px-6 py-3 rounded-lg hover:scale-105 transition-all font-semibold">
+                                    Ativar Câmera
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex space-x-4 mb-6">
+                        <button id="captureBtn" class="flex-1 bg-gradient-to-r from-green-600 to-blue-600 text-white py-4 rounded-xl hover:scale-105 transition-all font-bold text-lg bounce-animation disabled:opacity-50" disabled>
+                            📸 Capturar e Analisar
+                        </button>
+                        <button id="uploadBtn" class="bg-gray-600 text-white px-6 py-4 rounded-xl hover:scale-105 transition-all">
+                            📁 Upload
+                        </button>
+                    </div>
+
+                    <input type="file" id="fileInput" class="hidden" accept="image/*">
+
+                    <!-- Imagem Capturada -->
+                    <div id="capturedImage" class="hidden">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-3">Imagem Capturada:</h3>
+                        <img id="foodImage" class="w-full rounded-lg shadow-md mb-4" alt="Alimento capturado">
+                        <div class="flex space-x-2">
+                            <button id="analyzeBtn" class="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 rounded-lg hover:scale-105 transition-all font-semibold">
+                                🔍 Analisar Nutrição
+                            </button>
+                            <button id="retakeBtn" class="bg-gray-500 text-white px-6 py-3 rounded-lg hover:scale-105 transition-all">
+                                🔄 Nova Foto
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Painel de Informações Rápidas -->
+                <div class="bg-white rounded-2xl shadow-xl p-8 fade-in-scale">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                        ⚡ Análise Rápida
+                    </h2>
+                    
+                    <div id="quickAnalysis" class="space-y-4">
+                        <div class="text-center py-12 text-gray-500">
+                            <div class="text-6xl mb-4">🍎</div>
+                            <p class="text-lg">Capture ou faça upload de uma foto para começar!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resultados Detalhados -->
+            <div id="detailedResults" class="hidden">
+                <div class="bg-white rounded-2xl shadow-xl p-8 mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">📊 Análise Nutricional Completa</h2>
+                    
+                    <div id="nutritionResults">
+                        <!-- Resultados serão inseridos aqui -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Histórico de Análises -->
+            <div class="bg-white rounded-2xl shadow-xl p-8">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    📈 Histórico de Análises
+                </h2>
+                
+                <div id="analysisHistory" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Histórico será inserido aqui -->
+                </div>
+                
+                <div id="emptyHistory" class="text-center py-12 text-gray-500">
+                    <div class="text-6xl mb-4">📋</div>
+                    <p class="text-lg">Suas análises aparecerão aqui</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div id="loadingOverlay" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white rounded-2xl p-8 text-center">
+                <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-green-600 mx-auto mb-4"></div>
+                <p class="text-lg font-semibold text-gray-800">Analisando nutrição...</p>
+                <p class="text-sm text-gray-600 mt-2">Nossa IA está processando sua imagem</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

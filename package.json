@@ -1,0 +1,25 @@
+{
+  "name": "nutrition-scanner",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3005",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "14.0.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "typescript": "5.2.2",
+    "@types/node": "20.8.0",
+    "@types/react": "18.2.0",
+    "@types/react-dom": "18.2.0",
+    "framer-motion": "10.16.4",
+    "lucide-react": "0.290.0",
+    "tailwindcss": "3.3.5",
+    "autoprefixer": "10.4.16",
+    "postcss": "8.4.31",
+    "recharts": "2.8.0"
+  }
+}
